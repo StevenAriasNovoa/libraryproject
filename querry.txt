@@ -1,0 +1,407 @@
+-- database: c:\DB\proyectobiblioteca\projectlibrary.sqlite3
+
+CREATE TABLE
+    type_user (
+        type_user_id INTEGER NOT NULL PRIMARY KEY,
+        type_user_name VARCHAR
+    );
+
+--------------------TYPE PAY------------------------
+CREATE TABLE
+    type_pay (
+        type_pay_id INTEGER NOT NULL PRIMARY KEY,
+        type_pay VARCHAR
+    );
+
+-------------------- RENTED TYPE ------------------------
+CREATE TABLE
+    rented_type (
+        rented_type_id INTEGER NOT NULL PRIMARY KEY,
+        name_type VARCHAR
+    );
+
+-------------------- END TYPES ------------------------
+-------------------- USER ------------------------
+CREATE TABLE
+    users (
+        user_id INTEGER NOT NULL PRIMARY KEY,
+        type_user_id INTEGER NOT NULL,
+        type_pay_id INTEGER NOT NULL,
+        names VARCHAR,
+        email VARCHAR,
+        cellphone INTEGER NOT NULL,
+        passwords VARCHAR,
+        FOREIGN KEY (type_user_id) REFERENCES type_user (type_user_id) FOREIGN KEY (type_pay_id) REFERENCES type_pay (type_pay_id)
+    );
+
+--------------------END USERS------------------------
+--------------------SHOPPING CART------------------------
+CREATE TABLE
+    orders (
+        orders_id INTEGER NOT NULL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        rented_type_id INTEGER NOT NULL,
+        total_amount INTEGER NOT NULL,
+        depart_date VARCHAR,
+        return_date VARCHAR,
+        FOREIGN KEY (user_id) REFERENCES users (user_id) FOREIGN KEY (rented_type_id) REFERENCES rented_type (rented_type_id)
+    );
+
+--------------------END SHOPPING CART------------------------
+-------------------- AFTER ORDERS ------------------------
+CREATE TABLE
+    book_order (
+        order_book_id INTEGER NOT NULL PRIMARY KEY,
+        orders_id INTEGER NOT NULL,
+        book_id INTEGER NOT NULL,
+        FOREIGN KEY (orders_id) REFERENCES orders (orders_id) FOREIGN KEY (book_id) REFERENCES book (book_id)
+    );
+
+-------------------- END AFTER ORDERS ------------------------
+-------------------- BOOKS ------------------------
+CREATE TABLE
+    book (
+        book_id INTEGER NOT NULL PRIMARY KEY,
+        orders_id INTEGER NOT NULL,
+        gender_id INTEGER NOT NULL,
+        author_id INTEGER NOT NULL,
+        book_name VARCHAR,
+        ISBN INTEGER NOT NULL,
+        description TEXT NOT NULL,
+        quantity INTEGER NOT NULL,
+        dates INTEGER NOT NULL,
+        FOREIGN KEY (orders_id) REFERENCES orders (orders_id) FOREIGN KEY (gender_id) REFERENCES gender (gender_id) FOREIGN KEY (author_id) REFERENCES author (author_id)
+    );
+
+-------------------- GENDER  ------------------------
+CREATE TABLE
+    gender (
+        gender_id INTEGER NOT NULL PRIMARY KEY,
+        gender_name VARCHAR
+    );
+
+-------------------- GENDER BOOK ------------------------
+CREATE TABLE
+    gender_book (
+        book_id INTEGER NOT NULL,
+        gender_id INTEGER NOT NULL,
+        FOREIGN KEY (gender_id) REFERENCES gender (gender_id) FOREIGN KEY (book_id) REFERENCES book (book_id)
+    );
+
+-------------------- AUTHOR ------------------------
+CREATE TABLE
+    author (
+        author_id INTEGER NOT NULL PRIMARY KEY,
+        name_author VARCHAR
+    );
+
+-------------------- AUTHOR BOOK ------------------------
+CREATE TABLE
+    author_book (
+        author_id INTEGER NOT NULL,
+        book_id INTEGER NOT NULL,
+        FOREIGN KEY (author_id) REFERENCES author (author_id) FOREIGN KEY (book_id) REFERENCES book (book_id)
+    );
+
+--------------------  REVIEWS  ------------------------
+CREATE TABLE
+    reviews (
+        reviews_id INTEGER NOT NULL PRIMARY KEY,
+        book_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        reviews_score INTEGER NOT NULL,
+        score INTEGER NOT NULL,
+        texts TEXT NOT NULL,
+        book_delivered BOOLEAN DEFAULT TRUE,
+        date_review VARCHAR,
+        FOREIGN KEY (book_id) REFERENCES book (book_id) FOREIGN KEY (user_id) REFERENCES users (user_id)
+    );
+
+--  consultas libros
+SELECT
+    book_id score,
+    score AS 'top 3 books'
+FROM
+    reviews
+WHERE
+    score >= 3
+LIMIT
+    3;
+
+--------------------  INVENTORY  ------------------------
+CREATE TABLE
+    inventory (
+        inventory_id INTEGER NOT NULL PRIMARY KEY,
+        book_id INTEGER NOT NULL,
+        available_stock INTEGER NOT NULL,
+        borrowed INTEGER NOT NULL,
+        FOREIGN KEY (book_id) REFERENCES book (book_id)
+    );
+
+CREATE TABLE
+    inventory_user (
+        inventory_user_id INTEGER NOT NULL PRIMARY KEY,
+        inventory_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        FOREIGN KEY (inventory_id) REFERENCES inventory (inventory_id) FOREIGN KEY (user_id) REFERENCES users (user_id)
+    );
+
+--------------------  STATE REND  ------------------------
+CREATE TABLE
+    state_rend (
+        state_rend_id INTEGER NOT NULL PRIMARY KEY,
+        inventory_id INTEGER NOT NULL,
+        state_rend VARCHAR,
+        FOREIGN KEY (inventory_id) REFERENCES inventory (inventory_id)
+    );
+
+-------------------- END STATE REND  ------------------------
+SELECT
+    avg(borrowed),
+    depart_date,
+    inventory.inventory_id
+FROM
+    inventory
+    JOIN book b ON b.book_id = inventory.book_id
+    JOIN book_order ob ON ob.book_id = b.book_id
+    JOIN orders o ON o.orders_id = ob.orders_id
+    JOIN rented_type rt ON rt.rented_type_id = o.rented_type_id
+WHERE
+    depart_date = '2023-08-2'
+    AND rt.name_type = 'for rent';
+
+--------------------------------libros del ultimo mes con los emails de usuarios-------------------------------------------
+SELECT
+    orders_id,
+    email,
+    depart_date AS 'date'
+FROM
+    orders,
+    Users
+WHERE
+    depart_date = '2023-08-13'
+    AND users.email = 'BrenesV@gmail.com';
+
+--------------------------------------------------------------------------------------
+UPDATE inventory
+SET
+    available_stock = 0
+WHERE
+    EXISTS (
+        SELECT
+            1
+        FROM
+            users
+            JOIN type_user ut ON ut.type_user_id = users.type_user_id
+        WHERE
+            users.user_id = 1
+            AND ut.type_user_name = 'administrator'
+            AND inventory_id = 2
+    );
+
+-----------------------------------------------------------------
+UPDATE orders
+SET
+    rented_type_id = 1
+WHERE
+    EXISTS (
+        SELECT
+            1
+        FROM
+            users
+            JOIN type_user ut ON ut.type_user_id = users.type_user_id
+        WHERE
+            users.user_id = 1
+            AND ut.type_user_name = 'administrator'
+            AND orders_id = 1
+    );
+
+-------------------------------------------------------------------------------------------
+DELETE FROM reviews
+WHERE
+    EXISTS (
+        SELECT
+            1
+        FROM
+            users
+            JOIN reviews rv ON rv.reviews_id = users.type_user_id
+            JOIN type_user ut ON ut.type_user_id = users.type_user_id
+        WHERE
+            users.user_id = 2
+            AND ut.type_user_name = 'administrator'
+    )
+    AND texts = 'The book is so good';
+
+-------------------- CREATE VIEW------------------------
+CREATE VIEW
+    alquileres_recientes AS
+SELECT
+    user_id,
+    depart_date
+FROM
+    orders
+WHERE
+    depart_date = '2023-08-13';
+
+---------------------------------------------------
+SELECT
+    COUNT(book_id) Books,
+    gender_id
+FROM
+    book
+GROUP BY
+    gender_id
+HAVING
+    COUNT(*) > 1;
+
+-----------------------------------------------------
+CREATE VIEW
+    shop_cart AS
+SELECT
+    book_name,
+    orders_id
+FROM
+    book
+WHERE
+    book_id = 2
+    OR book_id = 3;
+
+DROP VIEW shop_cart;
+
+-------------------- TRIGGERS  ------------------------
+CREATE TRIGGER update_inventory AFTER
+UPDATE ON orders BEGIN
+UPDATE inventory
+SET
+    available_stock = CASE WHEN available_stock > 0 THEN available_stock - 1
+    ELSE
+        0 
+    END,
+    available_stock  = available_stock + 1
+WHERE
+    inventory_id IN (
+        SELECT
+            iv.inventory_id
+        FROM
+            orders o
+            JOIN book_order bo ON o.orders_id = bo.orders_id
+            JOIN book b ON bo.book_id = b.book_id
+            JOIN inventory iv ON iv.book_id = b.book_id
+            JOIN rented_type ON rented_type.rented_type_id = o.rented_type_id
+        WHERE
+            rented_type.name_type = 'for rent'
+            AND o.orders_id = New.orders_id
+    );
+
+END;
+
+DROP TRIGGER update_inventory;
+
+UPDATE orders
+SET
+    total_amount = 3000
+WHERE
+    orders_id = 2;
+
+---------------------------------------------------------------
+CREATE TRIGGER update_inventory_after_insert AFTER INSERT ON orders BEGIN
+UPDATE inventory
+SET
+    available_stock = available_stock - 1
+WHERE
+    inventory_id IN (
+        SELECT
+            iv.inventory_id
+        FROM
+            orders o
+            JOIN book_order bo ON o.orders_id = bo.orders_id
+            JOIN book b ON bo.book_id = b.book_id
+            JOIN inventory iv ON iv.book_id = b.book_id
+            JOIN rented_type ON rented_type.rented_type_id = o.rented_type_id
+        WHERE
+            rented_type.name_type = 'for rent'
+            AND o.orders_id = New.orders_id
+    );
+
+END;
+
+DROP TRIGGER update_inventory_after_insert;
+
+-------------------- END TRIGGERS  ------------------------
+SELECT
+    orders.depart_date AS 'depart_date',
+    users.email
+FROM
+    orders,
+    users
+WHERE
+    depart_date >= '2023-08-13'
+    AND users.email = 'BrenesV@gmail.com';
+
+SELECT
+    book_id,
+    score,
+    score AS '3 Mejores libros calificados'
+FROM
+    reviews
+WHERE
+    score >= 3
+LIMIT
+    3;
+
+UPDATE orders
+SET
+    total_amount = 3000
+WHERE
+    orders_id = 2;
+
+SELECT
+    book.book_name,
+    inventory.available_stock,
+    inventory.borrowed
+FROM
+    inventory
+    INNER JOIN book ON book.book_id = inventory.book_id
+    AND available_stock = 0;
+
+SELECT
+    orders.depart_date AS 'depart_date',
+    MAX(borrowed)
+FROM
+    orders,
+    inventory
+WHERE
+    depart_date >= '2023-08-13';
+
+-------------------- DROP TABLES  ------------------------
+
+DROP TABLE inventory_user;
+
+DROP TABLE type_user;
+
+DROP TABLE type_pay;
+
+DROP TABLE rented_type;
+
+DROP TABLE users;
+
+DROP TABLE orders;
+
+-- DROP VIEW alquileres_recientes;
+DROP TABLE book_order;
+
+DROP TABLE book;
+
+DROP TABLE gender;
+
+DROP TABLE gender_book;
+
+DROP TABLE author;
+
+DROP TABLE author_book;
+
+DROP TABLE reviews;
+
+DROP TABLE inventory;
+
+DROP TABLE state_rend;

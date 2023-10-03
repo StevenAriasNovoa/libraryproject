@@ -1,0 +1,687 @@
+-- database: c:\DB\proyectobiblioteca\project.sqlite3
+-- Use the ▷ button in the top right corner to run the entire file.
+CREATE TABLE
+    type_user (
+        type_user_id INTEGER NOT NULL PRIMARY KEY,
+        type_user_name VARCHAR
+    );
+
+INSERT INTO
+    type_user (type_user_name)
+VALUES
+    ('customer'),
+    ('administrator');
+
+--------------------TYPE PAY------------------------
+CREATE TABLE
+    type_pay (
+        type_pay_id INTEGER NOT NULL PRIMARY KEY,
+        type_pay VARCHAR
+    );
+
+INSERT INTO
+    type_pay (type_pay)
+VALUES
+    ('cash'),
+    ('card');
+
+-------------------- RENTED TYPE ------------------------
+CREATE TABLE
+    rented_type (
+        rented_type_id INTEGER NOT NULL PRIMARY KEY,
+        name_type VARCHAR
+    );
+
+INSERT INTO
+    rented_type (name_type)
+VALUES
+    ('delivered'),
+    ('pending delivery'),
+    ('for rent');
+
+-------------------- END TYPES ------------------------
+-------------------- USER ------------------------
+CREATE TABLE
+    users (
+        user_id INTEGER NOT NULL PRIMARY KEY,
+        type_user_id INTEGER NOT NULL,
+        type_pay_id VARCHAR,
+        names VARCHAR,
+        email VARCHAR,
+        cellphone INTEGER NOT NULL,
+        passwords VARCHAR,
+        FOREIGN KEY (type_user_id) REFERENCES type_user (type_user_id) FOREIGN KEY (type_pay_id) REFERENCES type_pay (type_pay_id)
+    );
+
+INSERT INTO
+    users (
+        type_user_id,
+        type_pay_id,
+        names,
+        email,
+        cellphone,
+        passwords
+    )
+VALUES
+    (
+        2,
+        1,
+        'Steven',
+        'fabiansteven@gmail.com',
+        12092312,
+        '212121'
+    ),
+    (
+        2,
+        2,
+        'Deylan',
+        'ObandoD@gmail.com',
+        123563,
+        'deylan@'
+    ),
+    (
+        1,
+        2,
+        'Valery',
+        'BrenesV@gmail.com',
+        828291,
+        '0838'
+    ),
+    (
+        1,
+        1,
+        'Chuty',
+        'Chuty@gmail.com',
+        3300923,
+        'chuty192'
+    ),
+    (
+        1,
+        1,
+        'Gustavo',
+        'MataG@gmail.com',
+        192322,
+        'tavo122'
+    );
+
+--------------------END USERS------------------------
+--------------------SHOPPING CART------------------------
+CREATE TABLE
+    orders (
+        orders_id INTEGER NOT NULL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        rented_type_id INTEGER NOT NULL,
+        total_amount INTEGER NOT NULL,
+        depart_date VARCHAR,
+        return_date VARCHAR,
+        FOREIGN KEY (user_id) REFERENCES users (user_id) FOREIGN KEY (rented_type_id) REFERENCES rented_type (rented_type_id)
+    );
+
+-------------------- CREATE VIEW------------------------
+CREATE VIEW
+    alquileres_recientes AS
+SELECT
+    orders_id,
+    depart_date
+FROM
+    orders
+WHERE
+    depart_date >= '2023-08-13';
+
+-------------------- END CREATE VIEW ------------------------
+INSERT INTO
+    orders (
+        user_id,
+        total_amount,
+        depart_date,
+        return_date,
+        rented_type_id
+    )
+VALUES
+    (3, 10000, '2023-08-13', '2023-10-13', 2),
+    (5, 17000, '2023-08-2', '2023-09-12', 3),
+    (2, 19000, '2023-09-5', '2023-10-29', 2),
+    (4, 21000, '2023-08-24', '2023-09-30', 3),
+    (1, 7000, '2023-09-12', '2023-10-12', 3);
+
+--------------------END SHOPPING CART------------------------
+-------------------- AFTER ORDERS ------------------------
+CREATE TABLE
+    book_order (
+        order_book_id INTEGER NOT NULL PRIMARY KEY,
+        orders_id INTEGER NOT NULL,
+        book_id INTEGER NOT NULL,
+        FOREIGN KEY (orders_id) REFERENCES orders (orders_id) FOREIGN KEY (book_id) REFERENCES book (book_id)
+    );
+
+INSERT INTO
+    book_order (orders_id, book_id)
+VALUES
+    (5, 5);
+
+INSERT INTO
+    book_order (orders_id, book_id)
+VALUES
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 4),
+    (5, 5);
+
+-------------------- END AFTER ORDERS ------------------------
+-------------------- BOOKS ------------------------
+CREATE TABLE
+    book (
+        book_id INTEGER NOT NULL PRIMARY KEY,
+        orders_id INTEGER NOT NULL,
+        book_name INTEGER NOT NULL,
+        gender_id INTEGER NOT NULL,
+        author_id VARCHAR,
+        Sypnosis INTEGER NOT NULL,
+        ISBN INTEGER NOT NULL,
+        quantity INTEGER NOT NULL,
+        Published INTEGER NOT NULL,
+        FOREIGN KEY (orders_id) REFERENCES orders (orders_id) FOREIGN KEY (gender_id) REFERENCES gender (gender_id) FOREIGN KEY (author_id) REFERENCES author (author_id)
+    );
+
+INSERT INTO
+    book (
+        orders_id,
+        book_name,
+        gender_id,
+        author_id,
+        Sypnosis,
+        ISBN,
+        quantity,
+        Published
+    )
+VALUES
+    (
+        1,
+        'Como hacer que te pasan las cosas buenas',
+        4,
+        1,
+        'A personal ethics help book.',
+        '9788467053302',
+        20,
+        '2018/10/1'
+    ),
+    (
+        2,
+        'Don quijote de la Mancha',
+        3,
+        2,
+        'A man dreaming of being a knight',
+        '9780744535021',
+        12,
+        '1605/23/4'
+    ),
+    (
+        3,
+        'El viento Conoce mi nombre',
+        6,
+        3,
+        'A 6-year-old boy with a father who disappeared overnight',
+        '101644738317',
+        13,
+        '2023/5/23'
+    ),
+    (
+        4,
+        'Encuentra tu persona vitamina',
+        4,
+        1,
+        'Is there something biochemical behind trust and love??',
+        '9788467062212',
+        5,
+        '2021/10/25'
+    ),
+    (
+        3,
+        'El nombre de la rosa',
+        7,
+        4,
+        'admirable reconstruction of the conflict of the century X|V',
+        '9788497592581',
+        6,
+        '1980/17/2'
+    ),
+    (
+        4,
+        'Veinte mil lenguas submarinas',
+        8,
+        5,
+        'recounts a journey of 3 shipwrecked men captured by a submarine captain ahead of his time',
+        '109583006823',
+        2,
+        '1870'
+    ),
+    (
+        1,
+        'señor de los anillos',
+        3,
+        6,
+        'the journey undertaken by 9 companions to destroy a Ring full of evil power.',
+        '9788445000663',
+        15,
+        '1937-09-21'
+    ),
+    (
+        3,
+        'la metamorfosis',
+        5,
+        7,
+        'ells the story of salesman Gregor Samsa, who wakes one morning to find himself inexplicably transformed into a huge insect and subsequently struggles to adjust to this new condition.',
+        '9789626342862',
+        35,
+        '1915-10-10'
+    ),
+    (
+        4,
+        'robinson crusoe',
+        3,
+        8,
+        'He is a sailor from York who, during a maritime expedition through Africa, is taken prisoner by pirates and is subjected to slavery.',
+        '9780194229845',
+        34,
+        '1079-02-12'
+    ),
+    (
+        2,
+        'La odisea',
+        10,
+        9,
+        'It tells the story of the Greek hero Odysseus, Ulysses, the journey back to his kingdom of Ithaca where his wife Penelope, surrounded by a suitor, and his son Telemachus are waiting for him.',
+        '9788403870154',
+        37,
+        '1906-06-4'
+    );
+
+-------------------- GENDER ------------------------
+CREATE TABLE
+    gender (
+        gender_id INTEGER NOT NULL PRIMARY KEY,
+        gender_name VARCHAR
+    );
+
+SELECT
+    COUNT(book_id) same_gender,
+    book_id
+FROM
+    book
+GROUP BY
+    gender_id
+HAVING
+    COUNT(*) > 1;
+
+INSERT INTO
+    gender (gender_name)
+VALUES
+    ('Novela de aventuras'),
+    ('Narrativo'),
+    ('Novela'),
+    ('Poema épico'),
+    ('Drama'),
+    ('Accion'),
+    ('Aventura'),
+    ('Auto ayuda'),
+    ('Novela'),
+    ('Ficcion historica'),
+    ('Misterio'),
+    ('Ficcion de aventura'),
+    ('Narrativo'),
+    ('Poema épico');
+
+-------------------- GENDER BOOK ------------------------
+CREATE TABLE
+    gender_book (
+        book_id INTEGER NOT NULL,
+        gender_id INTEGER NOT NULL,
+        FOREIGN KEY (gender_id) REFERENCES gender (gender_id) FOREIGN KEY (book_id) REFERENCES book (book_id)
+    );
+
+INSERT INTO
+    gender_book (book_id, gender_id)
+VALUES
+    (1, 1),
+    (2, 3),
+    (3, 2),
+    (4, 3),
+    (5, 4);
+
+-------------------- AUTHOR ------------------------
+INSERT INTO
+    author (name_author)
+VALUES
+    ('Marian Rojas Estapé'),
+    ('miguel de Cervantes'),
+    ('Isabel Allende'),
+    ('Umberto Eco'),
+    ('Julio Verne'),
+    ('Franz Kafka '),
+    ('J. R. R. Tolkien'),
+    ('Daniel Defoe'),
+    ('Homero');
+
+-------------------- AUTHOR BOOK ------------------------
+CREATE TABLE
+    author_book (
+        author_id INTEGER NOT NULL,
+        book_id INTEGER NOT NULL,
+        FOREIGN KEY (author_id) REFERENCES author (author_id) FOREIGN KEY (book_id) REFERENCES book (book_id)
+    );
+
+INSERT INTO
+    author_book (book_id, author_id)
+VALUES
+    (1, 1),
+    (3, 2),
+    (2, 3),
+    (4, 4),
+    (5, 5);
+
+-------------------- END BOOKS ------------------------
+--------------------  REVIEWS  ------------------------
+CREATE TABLE
+    reviews (
+        reviews_id INTEGER NOT NULL PRIMARY KEY,
+        book_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        reviews_score INTEGER NOT NULL,
+        score INTEGER NOT NULL,
+        texts TEXT NOT NULL,
+        book_delivered BOOLEAN DEFAULT TRUE,
+        date_review VARCHAR,
+        FOREIGN KEY (book_id) REFERENCES book (book_id) FOREIGN KEY (user_id) REFERENCES users (user_id)
+    );
+
+--  consultas libros
+SELECT
+    book_id score,
+    score AS '3 Mejores libros calificados'
+FROM
+    reviews
+WHERE
+    score >= 3
+LIMIT
+    3;
+
+INSERT INTO
+    reviews (
+        book_id,
+        user_id,
+        reviews_score,
+        score,
+        texts,
+        date_review
+    )
+VALUES
+    (1, 4, '⭐⭐⭐⭐⭐', 5, ' Muy Bueno ', '2023-10-15'),
+    (2, 3, '⭐⭐⭐⭐', 4, 'Bueno', '2023-09-15'),
+    (3, 5, '⭐⭐⭐', 3, 'Regular', '2023-10-30'),
+    (4, 1, '⭐⭐', 2, 'Malo', '2023-10-02'),
+    (5, 2, '⭐', 1, 'Muy Malo', '2023-10-14');
+
+--------------------  END  REVIEWS  ------------------------
+--------------------  INVENTORY  ------------------------
+CREATE TABLE
+    inventory (
+        inventory_id INTEGER NOT NULL PRIMARY KEY,
+        book_id INTEGER NOT NULL,
+        available_stock INTEGER NOT NULL,
+        borrowed INTEGER NOT NULL,
+        FOREIGN KEY (book_id) REFERENCES book (book_id)
+    );
+
+INSERT INTO
+    inventory (book_id, available_stock, borrowed)
+VALUES
+    (1, 20, 7),
+    (2, 10, 4),
+    (3, 5, 2),
+    (4, 12, 5),
+    (5, 7, 3);
+
+CREATE TABLE
+    inventory_user (
+        inventory_user_id INTEGER NOT NULL PRIMARY KEY,
+        inventory_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        FOREIGN KEY (inventory_id) REFERENCES inventory (inventory_id) FOREIGN KEY (user_id) REFERENCES users (user_id)
+    );
+
+INSERT INTO
+    inventory_user (inventory_id, user_id)
+VALUES
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 4),
+    (5, 5);
+
+-------------------- END INVENTORY  ------------------------
+--------------------  STATE REND  ------------------------
+CREATE TABLE
+    state_rend (
+        state_rend_id INTEGER NOT NULL PRIMARY KEY,
+        inventory_id INTEGER NOT NULL,
+        state_rend VARCHAR,
+        FOREIGN KEY (inventory_id) REFERENCES inventory (inventory_id)
+    );
+
+INSERT INTO
+    state_rend (inventory_id, state_rend)
+VALUES
+    (1, 'delivered'),
+    (2, 'pending delivery'),
+    (3, 'for rent'),
+    (4, 'pending delivery'),
+    (5, 'for rent');
+
+-------------------- END STATE REND  ------------------------
+SELECT
+    avg(borrowed),
+    depart_date,
+    inventory_id
+FROM
+    inventory
+    JOIN orders o ON o.orders_id = inventory.inventory_id
+    JOIN rented_type rt ON rt.rented_type_id = o.rented_type_id
+WHERE
+    depart_date = '2023-08-13'
+    AND rt.name_type = 'for rent';
+
+--------------------------------libros del ultimo mes con los emails de usuarios-------------------------------------------
+SELECT
+    orders.depart_date AS 'depart_date',
+    users.email
+FROM
+    orders,
+    users
+WHERE
+    depart_date >= '2023-08-13'
+    AND users.email = 'BrenesV@gmail.com';
+
+----------------------------------------------------------------------------------------------------------------------------
+UPDATE inventory
+SET
+    available_stock = 8
+WHERE
+    EXISTS (
+        SELECT
+            3
+        FROM
+            users
+            JOIN type_user ut ON ut.type_user_id = users.type_user_id
+        WHERE
+            users.user_id = 1
+            AND ut.type_user_name = 'administrator'
+            AND inventory_id = 2
+    );
+
+-------------------- TRIGGERS  ------------------------
+CREATE TRIGGER update_inventory AFTER
+UPDATE ON orders BEGIN
+UPDATE inventory
+SET
+    available_stock = available_stock - 1
+WHERE
+    inventory_id IN (
+        SELECT
+            iv.inventory_id
+        FROM
+            orders o
+            JOIN book_order bo ON o.orders_id = bo.orders_id
+            JOIN book b ON bo.book_id = b.book_id
+            JOIN inventory iv ON iv.book_id = b.book_id
+            JOIN rented_type ON rented_type.rented_type_id = o.rented_type_id
+        WHERE
+            rented_type.name_type = 'for rent'
+            AND o.orders_id = New.orders_id
+    );
+
+END;
+
+DROP TRIGGER update_inventory;
+
+UPDATE orders
+SET
+    total_amount = 3000
+WHERE
+    orders_id = 2;
+
+CREATE TRIGGER update_inventory_after_insert AFTER INSERT ON orders BEGIN
+UPDATE inventory
+SET
+    available_stock = available_stock - 1
+WHERE
+    inventory_id IN (
+        SELECT
+            iv.inventory_id
+        FROM
+            orders o
+            JOIN book_order bo ON o.orders_id = bo.orders_id
+            JOIN book b ON bo.book_id = b.book_id
+            JOIN inventory iv ON iv.book_id = b.book_id
+            JOIN rented_type ON rented_type.rented_type_id = o.rented_type_id
+        WHERE
+            rented_type.name_type = 'for rent'
+            AND o.orders_id = New.orders_id
+    );
+
+END;
+
+DROP TRIGGER update_inventory_after_insert;
+
+-------------------- END TRIGGERS  ------------------------
+-------------------------------BOOKS RENT INFO--------------------
+SELECT
+    COUNT(book_id) same_gender,
+    book_id
+FROM
+    book
+GROUP BY
+    gender_id
+HAVING
+    COUNT(*) > 1;
+
+SELECT
+    orders.depart_date AS 'depart_date',
+    MAX(borrowed)
+FROM
+    orders,
+    inventory
+WHERE
+    depart_date >= '2023-08-13';
+
+SELECT
+    orders.depart_date AS 'depart_date',
+    users.email
+FROM
+    orders,
+    users
+WHERE
+    depart_date >= '2023-08-13'
+    AND users.email = 'BrenesV@gmail.com';
+
+SELECT
+    book_id score,
+    score AS '3 Mejores libros calificados'
+FROM
+    reviews
+WHERE
+    score >= 3
+LIMIT
+    3;
+
+UPDATE orders
+SET
+    total_amount = 3000
+WHERE
+    orders_id = 2;
+
+------------------------------------------------------------------
+SELECT
+    book.book_name,
+    inventory.available_stock,
+    inventory.borrowed
+FROM
+    inventory
+    INNER JOIN book ON book.id = inventory.id
+    AND available_stock = 0;
+
+-------------------------------END----------------------
+-------------------- DROP TABLES  ------------------------
+DROP TABLE type_user;
+
+DROP TABLE type_pay;
+
+DROP TABLE rented_type;
+
+DROP TABLE users;
+
+DROP TABLE orders;
+
+DROP TABLE book_order;
+
+DROP TABLE book;
+
+DROP TABLE gender;
+
+DROP TABLE gender_book;
+
+DROP TABLE author;
+
+DROP TABLE author_book;
+
+DROP TABLE reviews;
+
+DROP TABLE inventory;
+
+DROP TABLE state_rend;
+
+INSERT INTO
+    orders (
+        user_id,
+        total_amount,
+        depart_date,
+        return_date,
+        rented_type_id
+    )
+SELECT
+    3 AS user_id,
+    2000 AS total_amount,
+    '2023-08-24' AS depart_date,
+    '2023-09-24' AS return_date,
+    3 AS rented_type_id
+WHERE
+    EXISTS (
+        SELECT
+            1
+        FROM
+            users
+            JOIN type_user ut ON ut.type_user_id = users.type_user_id
+        WHERE
+            users.user_id = 3
+            AND ut.type_user_name = 'customer'
+    );

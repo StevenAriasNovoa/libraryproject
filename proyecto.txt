@@ -1,0 +1,242 @@
+INSERT INTO Users(
+    type_user_id, 
+    type_pay_id, 
+    email, 
+    cellphone, 
+    name, 
+    password)
+VALUES
+    (1, 1, 'stevenarias@gmail.com', '13983772', 'Steven', '9282'),
+    (1, 2, 'aliascazanova@gmail.com', '2353745', 'Martin', '1294385'),
+    (2, NULL, 'Duartebrenes@gmail.com', '12359083','Valery','0002'),
+    (1, 1,'mataTavo@gmail.com','09892375','Gustavo','0001'),
+    (1, 2,'espinozaBindas@gmail.com','69321','Raul','RaUl1411203$'),
+    (1, 1,'ElFantastico@gmail.com','12091230','Chuty','Elfantastico00'),
+    (2, NULL,'barryvega@gmail.com','1209202','Barry','BarryAlen')
+;
+
+
+INSERT INTO type_pay (type_pay) 
+    VALUES 
+    ('Cash'),
+    ('card')
+    ;
+
+
+INSERT INTO type_user (type_user_name)
+    VALUES
+    ('customer'),
+    ('administrative')
+;
+
+
+INSERT INTO books(
+    shopping_cart_id,
+    Book_name, 
+    Gender_id, 
+    Author_id, 
+    Sypnosis, 
+    ISBN, 
+    Published)
+    VALUES 
+    (
+        1,
+        'Como hacer que te pasan las cosas buenas',
+        4, 1, 
+        'A personal ethics help book.',
+        9788467053302, 
+        '2018/10/1'
+    ),
+    (
+        2,
+        'Don quijote de la Mancha', 
+        3, 2,
+        'A man dreaming of being a knight',
+        9780744535021 ,
+        '1605/23/4' 
+    ),
+    (
+        3,
+        'El viento Conoce mi nombre',
+        6, 3, 
+        'A 6-year-old boy with a father who disappeared overnight', 
+        101644738317 ,
+        '2023/5/23'
+    ),
+    (
+        4,
+        'Encuentra tu persona vitamina', 
+        4, 1, 
+        'Is there something biochemical behind trust and love??',
+        9788467062212 , 
+        '2021/10/25'
+    ),
+    (  
+        5,
+        'El nombre de la rosa', 
+        7, 4, 
+        'admirable reconstruction of the conflict of the century X|V', 
+        9788497592581, 
+        '1980/17/2'
+    ),
+    (
+        6,
+        'Veinte mil lenguas submarinas', 
+        8, 5, 
+        'recounts a journey of 3 shipwrecked men captured by a submarine captain ahead of his time', 
+        109583006823 , 
+        '1870'
+    ),
+    (
+        7,  
+        'señor de los anillos',
+        3, 6,
+        'the journey undertaken by 9 companions to destroy a Ring full of evil power.',
+        9788445000663,
+        '1937-09-21'
+    ),
+    (
+        8,
+        'la metamorfosis',
+        5, 7,
+        'ells the story of salesman Gregor Samsa, who wakes one morning to find himself inexplicably transformed into a huge insect and subsequently struggles to adjust to this new condition.',
+        9789626342862,
+        '1915-10-10'
+    ),
+    (
+        9,
+        'robinson crusoe',
+        3, 8 ,
+        'He is a sailor from York who, during a maritime expedition through Africa, is taken prisoner by pirates and is subjected to slavery.',
+        9780194229845,
+        '1079-02-12'
+    ),
+    (
+        10,
+        'La odisea',
+        10, 9,
+        'It tells the story of the Greek hero Odysseus, Ulysses, the journey back to his kingdom of Ithaca where his wife Penelope, surrounded by a suitor, and his son Telemachus are waiting for him.',
+        9788403870154,
+        '1906-06-4'
+    )
+; 
+
+INSERT INTO gender(gender_name)
+VALUES 
+    ('Drama'),
+    ('Accion'),
+    ('Aventura'),
+    ('Auto ayuda'),
+    ('Novela'),
+    ('Ficcion historica'),
+    ('Misterio'),
+    ('Ficcion de aventura'),
+    ('Narrativo'),
+    ('Poema épico')
+;
+
+
+INSERT INTO gender_books( book_id, gender_id )
+VALUES
+    (1, 4),
+    (2, 3),
+    (3, 6),
+    (4, 4),
+    (5, 7),
+    (6, 8)
+;
+
+
+INSERT INTO author(name_author)
+VALUES
+    ('Marian Rojas Estapé'),
+    ('miguel de Cervantes'),
+    ('Isabel Allende'),
+    ('Umberto Eco'),
+    ('Julio Verne'),
+    ('Franz Kafka '),
+    ('J. R. R. Tolkien'),
+    ('Daniel Defoe'),
+    ('Homero')
+;
+
+
+INSERT INTO author_books( book_id, author_id )
+VALUES
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 1),
+    (5, 4),
+    (6, 5)
+;
+
+
+INSERT INTO reviews(
+    book_id,
+    user_id,
+    qualification,
+    score,
+    reviews_score,
+    date_review)
+VALUES 
+    (1, 1, '⭐⭐⭐⭐⭐', 6, 'muy bueno', '24/12/2022' ),
+    (2, 2, '⭐⭐⭐⭐⭐', 6, 'muy bueno', '2/1/2023' ),
+    (3, 3, '⭐⭐⭐⭐', 5, 'bueno', '17/8/2023' ),
+    (4, 4, '⭐⭐⭐', 4, 'entretenido', '5/2/2023' ),
+    (5, 5, '⭐⭐', 3, 'malo', '31/3/2023' ),
+    (6, 6, '⭐⭐⭐⭐', 5, 'bueno', '7/4/2023' )
+;
+
+
+INSERT INTO
+    state_rend (inventory_id, state_rend)
+VALUES
+    (1, 'delivered'),
+    (2, 'pending delivery'),
+    (3, 'for rent'),
+    (4, 'pending delivery'),
+    (5, 'for rent')
+;
+
+
+INSERT INTO
+    inventory (book_id, available_stock, borrowed)
+VALUES
+    (1, 20, 7),
+    (2, 10, 4),
+    (3, 5, 2),
+    (4, 12, 5),
+    (5, 7, 3)
+;
+
+
+INSERT INTO orders_book(
+    shopping_cart_id,
+    user_id,
+    book_id)
+    VALUES
+    (1, 1, 1),
+    (2, 2, 2),
+    (4, 4, 4),
+    (5, 5, 5),
+    (6, 6, 6)
+;
+
+
+INSERT INTO shopping_cart(
+    user_id,total_amount, 
+    depart_date, 
+    return_date)
+VALUES
+(3,'10,000','2023-08-13','2023-10-13'),
+(5,'17,000','2023-05-2','2023-08-12'),
+(2,'19,000','2023-02-19','2023-06-29'),
+(4,'21,000','2023-05-15','2023-09-30'),
+(1,'7,000','2023-08-27','2023-10-12'),
+(6,'9,000','2023-08-27','2023-04-20'),
+(2,'12,000','2023-01-23','2023-06-29'),
+(4,'81,000','2023-02-22','2023-09-30'),
+(1,'24,000','2023-03-29','2023-10-12'),
+(6,'34,000','2023-12-31','2024-01-20');
+
